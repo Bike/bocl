@@ -10,3 +10,6 @@ extern lispobj** values;
 
 lispobj* fill_values(size_t n, ...);
 void init_values(void);
+
+lispobj* values_to_list(void);
+lispobj* list_to_values(lispobj*);

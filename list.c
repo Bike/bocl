@@ -47,3 +47,18 @@ lispobj* map1(lispobj*(*fun)(lispobj*,void*),
 
   return result;
 }
+
+/* Unlike cl:last, this is invalid on anything but a cons. */
+lispobj* last(lispobj* ls) {
+  for(; !nullp(CDR(*ls)); ls = CDR(*ls));
+  return ls;
+}
+
+lispobj* nconc2(lispobj* l1, lispobj* l2) {
+  if (nullp(l1)) return l2;
+  else {
+    lispobj* las = last(l1);
+    CDR(*las) = l2;
+    return l1;
+  }
+}

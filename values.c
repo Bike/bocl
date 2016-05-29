@@ -1,6 +1,6 @@
 #include "alloc.h" // for init
 #include "error.h"
-#include "list.h" // nil
+#include "list.h"
 #include "values.h"
 
 // 20 is the minimum maximum (also yes, this is exclusive)
@@ -31,4 +31,29 @@ lispobj* fill_values(size_t n, ...) {
 
 void init_values(void) {
   values = alloc_lop_vector(multiple_values_limit);
+}
+
+// I'm somehow glad list.h was already a dependency.
+
+lispobj* values_to_list(void) {
+  size_t i;
+  lispobj* result = nil;
+  /* Written in this weird way because I don't want to think about
+   *  size_t underflow. */
+  for (i = nvalues - 1; i > 0; --i)
+    result = cons(values[i], result);
+  if (nvalues > 0)
+    return cons(values[0], result);
+  else
+    return nil;
+}
+
+lispobj* list_to_values(lispobj* ls) {
+  size_t i;
+  for (i = 0; !nullp(ls); ++i, ls = CDR(*ls))
+    if (i >= multiple_values_limit)
+      error("Too many values (in list_to_values)");
+    else values[i] = CAR(*ls);
+  nvalues = i;
+  return values[0];
 }
